@@ -9,18 +9,171 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
-    <title>WYSA Knights Snack Schedule</title>
+    <title>Wylie Lightning Snack Signup</title>
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- React 18, Babel, Tailwind CSS CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        gold: '#F5BE18',
+                        darkBlack: '#0D1117',
+                        charcoal: '#1A1E24',
+                        silver: '#A6B0B9',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0D1117;
+            color: #FFFFFF;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .font-display {
+            font-family: 'Outfit', 'Inter', sans-serif;
+        }
+
+        /* ============================================================
+           MD3-INSPIRED MOTION SYSTEM
+           Easing: Emphasized (cubic-bezier(0.2, 0, 0, 1.0))
+           Standard:  cubic-bezier(0.2, 0, 0, 1)
+           ============================================================ */
+
+        /* --- Page load: header slides down --- */
+        @keyframes md3-slide-down {
+            from { opacity: 0; transform: translateY(-16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim-header {
+            animation: md3-slide-down 350ms cubic-bezier(0.2, 0, 0, 1) both;
+        }
+
+        /* --- Staggered card entry (fade + subtle upward slide) --- */
+        @keyframes md3-card-enter {
+            from { opacity: 0; transform: translateY(20px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)  scale(1); }
+        }
+        .anim-card {
+            opacity: 0;
+            animation: md3-card-enter 400ms cubic-bezier(0.2, 0, 0, 1) forwards;
+        }
+        /* Stagger delays */
+        .anim-card-0  { animation-delay: 40ms;  }
+        .anim-card-1  { animation-delay: 80ms;  }
+        .anim-card-2  { animation-delay: 120ms; }
+        .anim-card-3  { animation-delay: 160ms; }
+        .anim-card-4  { animation-delay: 200ms; }
+        .anim-card-5  { animation-delay: 240ms; }
+        .anim-card-6  { animation-delay: 280ms; }
+        .anim-card-7  { animation-delay: 320ms; }
+
+        /* --- Progress bar section entry --- */
+        .anim-progress {
+            animation: md3-card-enter 380ms cubic-bezier(0.2, 0, 0, 1) 10ms both;
+        }
+
+        /* --- Scrim (backdrop) --- */
+        @keyframes md3-scrim-in  { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes md3-scrim-out { from { opacity: 1; } to { opacity: 0; } }
+        .anim-scrim-in  { animation: md3-scrim-in  250ms cubic-bezier(0.2, 0, 0, 1) both; }
+        .anim-scrim-out { animation: md3-scrim-out 200ms cubic-bezier(0.4, 0, 1, 1) both; }
+
+        /* --- Modal sheet: slide up from bottom (mobile) / scale-in (desktop) --- */
+        @keyframes md3-sheet-in {
+            from { opacity: 0; transform: translateY(40px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
+        @keyframes md3-sheet-out {
+            from { opacity: 1; transform: translateY(0)    scale(1); }
+            to   { opacity: 0; transform: translateY(40px) scale(0.97); }
+        }
+        .anim-sheet-in  { animation: md3-sheet-in  320ms cubic-bezier(0.2, 0, 0, 1) both; }
+        .anim-sheet-out { animation: md3-sheet-out 220ms cubic-bezier(0.4, 0, 1, 1) both; }
+
+        /* --- Modal body view transitions (cross-fade between signup/success/manage/confirm) --- */
+        @keyframes md3-view-enter {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .anim-view {
+            animation: md3-view-enter 280ms cubic-bezier(0.2, 0, 0, 1) both;
+        }
+
+        /* --- Success icon pop --- */
+        @keyframes md3-pop {
+            0%   { transform: scale(0.6); opacity: 0; }
+            60%  { transform: scale(1.12); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+        .anim-pop {
+            animation: md3-pop 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        /* --- Subtle shimmer on claimed chip --- */
+        @keyframes md3-shimmer {
+            0%   { background-position: -200% center; }
+            100% { background-position: 200% center; }
+        }
+        .anim-claimed-chip:hover {
+            background-image: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+            background-size: 200% auto;
+            animation: md3-shimmer 1.4s linear infinite;
+        }
+
+        /* --- Ripple on button press --- */
+        .ripple-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .ripple-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 350ms cubic-bezier(0.2, 0, 0, 1);
+            pointer-events: none;
+        }
+        .ripple-btn:active::after {
+            opacity: 1;
+            transition: opacity 0ms;
+        }
+
+        /* --- Floating label input focus glow (MD3 style) --- */
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(245,190,24,0.15);
+        }
+
+        /* --- Smooth spinner (used in submit button loading state) --- */
+        @keyframes spin-smooth {
+            to { transform: rotate(360deg); }
+        }
+        .spin { animation: spin-smooth 0.7s linear infinite; }
+    </style>
 </head>
 
-<body class="bg-[#F9FAFB]">
+<body class="bg-[#0D1117] text-white antialiased selection:bg-[#F5BE18] selection:text-[#0D1117]">
     <div id="root"></div>
 
     <script type="text/babel" data-type="module">
@@ -43,7 +196,7 @@
         const db = getFirestore(app);
         const auth = getAuth(app);
 
-        // --- ICONS (Inline to prevent crashes) ---
+        // --- ICONS (Lucide SVG Components) ---
         const IconBase = ({ children, ...props }) => (
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>{children}</svg>
         );
@@ -57,38 +210,42 @@
         const Cookie = (props) => <IconBase {...props}><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5" /><path d="M8.5 8.5v.01" /><path d="M16 15.5v.01" /><path d="M12 12v.01" /><path d="M11 17v.01" /><path d="M7 14v.01" /></IconBase>;
         const Download = (props) => <IconBase {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" x2="12" y1="15" y2="3" /></IconBase>;
         const ExternalLink = (props) => <IconBase {...props}><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" /><polyline points="15 3 21 3 21 9" /><line x1="10" x2="21" y1="14" y2="3" /></IconBase>;
+        const Zap = (props) => <IconBase {...props}><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /></IconBase>;
+        const Sparkles = (props) => <IconBase {...props}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" /></IconBase>;
 
-        // --- CONSTANTS ---
+        // --- BRAND CONSTANTS ---
         const COLORS = {
-            navy: '#15284B',
-            steel: '#3C6EAB',
-            white: '#FFFFFF',
-            silver: '#A8B3BD',
-            black: '#0D1115',
+            gold: '#F5BE18',       // Lightning yellow accent, badges, buttons
+            black: '#0D1117',      // Primary dark background
+            charcoal: '#1A1E24',   // Card surfaces and container backgrounds
+            silver: '#A6B0B9',     // Secondary accents, borders, and subtext
+            white: '#FFFFFF',      // Primary headers and contrasting text
         };
 
         const SCHEDULE_DATES = [
-            { id: 'feb-28', display: 'Saturday, Feb 28 @1:10pm', short: 'Feb 28', start: '20260228T131000', end: '20260228T141000' },
-            { id: 'mar-28', display: 'Saturday, Mar 28 @11:15am', short: 'Mar 28', start: '20260328T111500', end: '20260328T121500' },
-            { id: 'apr-09', display: 'Thursday, Apr 9 @6:00pm', short: 'Apr 9', start: '20260409T180000', end: '20260409T190000' },
-            { id: 'apr-11', display: 'Saturday, Apr 11 @1:00pm', short: 'Apr 11', start: '20260411T130000', end: '20260411T140000' },
-            { id: 'apr-20', display: 'Monday, Apr 20 @6:00pm', short: 'Apr 20', start: '20260420T180000', end: '20260420T190000' },
-            { id: 'may-02', display: 'Saturday, May 2 @11:35am', short: 'May 2', start: '20260502T113500', end: '20260502T123500' },
-            { id: 'may-09', display: 'Saturday, May 9 @1:55pm', short: 'May 9', start: '20260509T135500', end: '20260509T145500' },
-            { id: 'may-11', display: 'Monday, May 11 @6:00pm', short: 'May 11', start: '20260511T180000', end: '20260511T190000' },
+            { id: 'date-1', display: 'Saturday, Mar 7', short: 'Mar 7', start: '20260307T090000', end: '20260307T100000' },
+            { id: 'date-2', display: 'Saturday, Mar 14', short: 'Mar 14', start: '20260314T090000', end: '20260314T100000' },
+            { id: 'date-3', display: 'Saturday, Mar 21', short: 'Mar 21', start: '20260321T090000', end: '20260321T100000' },
+            { id: 'date-4', display: 'Saturday, Mar 28', short: 'Mar 28', start: '20260328T090000', end: '20260328T100000' },
+            { id: 'date-5', display: 'Saturday, Apr 4', short: 'Apr 4', start: '20260404T090000', end: '20260404T100000' },
+            { id: 'date-6', display: 'Saturday, Apr 11', short: 'Apr 11', start: '20260411T090000', end: '20260411T100000' },
+            { id: 'date-7', display: 'Saturday, Apr 18', short: 'Apr 18', start: '20260418T090000', end: '20260418T100000' },
+            { id: 'date-8', display: 'Saturday, Apr 25', short: 'Apr 25', start: '20260425T090000', end: '20260425T100000' }
         ];
 
-        const appId = 'wylie-knights-2026';
+        const appId = 'wylie-lightning-2026';
 
         // --- CALENDAR EXPORT HELPERS ---
         const getGoogleCalendarUrl = (selectedDate, parentName, childName) => {
             if (!selectedDate) return '#';
-            const title = 'Bring Snacks - WYSA Knights ⚽🧃';
-            const location = 'WYSA Soccer Fields';
+            const title = 'Bring Snacks - Wylie Lightning ⚡🧃';
+            const location = 'Wylie Soccer Fields';
             const childText = childName ? ` for ${childName}'s team` : '';
-            const details = `Reminder: Snack duty${childText}!\n\nParent: ${parentName || 'Parent'}\nPlayer: ${childName || 'Player'}\nMatch: ${selectedDate.display}\n\nRemember to bring snacks for the team today! Go Knights! ⚽🧃`;
+            const details = `Reminder: Snack duty${childText}!\n\nParent: ${parentName || 'Parent'}\nPlayer: ${childName || 'Player'}\nMatch: ${selectedDate.display}\n\nRemember to bring snacks for the team today! Go Lightning! ⚡🧃`;
 
-            const dates = `${selectedDate.start}/${selectedDate.end}`;
+            const startStr = selectedDate.start || '20260307T090000';
+            const endStr = selectedDate.end || '20260307T100000';
+            const dates = `${startStr}/${endStr}`;
 
             const params = new URLSearchParams({
                 action: 'TEMPLATE',
@@ -105,37 +262,40 @@
 
         const downloadIcsFile = (selectedDate, parentName, childName) => {
             if (!selectedDate) return;
-            const title = 'Bring Snacks - WYSA Knights ⚽🧃';
-            const location = 'WYSA Soccer Fields';
+            const title = 'Bring Snacks - Wylie Lightning ⚡🧃';
+            const location = 'Wylie Soccer Fields';
             const childText = childName ? ` for ${childName}'s team` : '';
-            const description = `Reminder: Snack duty${childText}!\\n\\nParent: ${parentName || 'Parent'}\\nPlayer: ${childName || 'Player'}\\nMatch: ${selectedDate.display}\\n\\nRemember to bring snacks for the team today! Go Knights! ⚽🧃`;
+            const description = `Reminder: Snack duty${childText}!\\n\\nParent: ${parentName || 'Parent'}\\nPlayer: ${childName || 'Player'}\\nMatch: ${selectedDate.display}\\n\\nRemember to bring snacks for the team today! Go Lightning! ⚡🧃`;
+
+            const startStr = selectedDate.start || '20260307T090000';
+            const endStr = selectedDate.end || '20260307T100000';
 
             const nowUtc = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
-            const uid = `wysa-knights-snack-${selectedDate.id}-${Date.now()}@wysaknights.org`;
+            const uid = `wylie-lightning-snack-${selectedDate.id}-${Date.now()}@wylielightning.com`;
 
             const icsLines = [
                 'BEGIN:VCALENDAR',
                 'VERSION:2.0',
-                'PRODID:-//WYSA Knights//Snack Schedule//EN',
+                'PRODID:-//Wylie Lightning//Snack Schedule//EN',
                 'CALSCALE:GREGORIAN',
                 'METHOD:PUBLISH',
                 'BEGIN:VEVENT',
                 `UID:${uid}`,
                 `DTSTAMP:${nowUtc}`,
-                `DTSTART;TZID=America/Chicago:${selectedDate.start}`,
-                `DTEND;TZID=America/Chicago:${selectedDate.end}`,
+                `DTSTART;TZID=America/Chicago:${startStr}`,
+                `DTEND;TZID=America/Chicago:${endStr}`,
                 `SUMMARY:${title}`,
                 `DESCRIPTION:${description}`,
                 `LOCATION:${location}`,
                 'STATUS:CONFIRMED',
                 'BEGIN:VALARM',
                 'ACTION:DISPLAY',
-                'DESCRIPTION:Snack Duty Reminder - WYSA Knights (Tomorrow)',
+                'DESCRIPTION:Snack Duty Reminder - Wylie Lightning (Tomorrow)',
                 'TRIGGER:-P1D',
                 'END:VALARM',
                 'BEGIN:VALARM',
                 'ACTION:DISPLAY',
-                'DESCRIPTION:Snack Duty Reminder - WYSA Knights (2 Hours Prior)',
+                'DESCRIPTION:Snack Duty Reminder - Wylie Lightning (2 Hours Prior)',
                 'TRIGGER:-PT2H',
                 'END:VALARM',
                 'END:VEVENT',
@@ -146,23 +306,116 @@
             const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
             const link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
-            link.setAttribute('download', `knights-snack-${selectedDate.id}.ics`);
+            link.setAttribute('download', `lightning-snack-${selectedDate.id}.ics`);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
             window.URL.revokeObjectURL(link.href);
         };
 
+        // --- SUB-COMPONENTS (Defined outside to prevent unmount/remount animation glitches) ---
+        const Header = () => (
+            <header
+                className="w-full relative overflow-hidden border-b-2 shadow-2xl anim-header"
+                style={{
+                    backgroundColor: COLORS.black,
+                    borderBottomColor: COLORS.gold
+                }}
+            >
+                {/* Background glow & lightning ambient flare */}
+                <div
+                    className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-48 rounded-full blur-3xl opacity-20 pointer-events-none"
+                    style={{ backgroundColor: COLORS.gold }}
+                ></div>
+                <div className="absolute top-0 right-0 w-36 h-36 bg-gradient-to-bl from-[#F5BE18]/10 to-transparent rounded-full transform translate-x-12 -translate-y-12 pointer-events-none"></div>
+
+                <div className="max-w-md mx-auto px-4 py-6 flex items-center justify-between relative z-10">
+                    <div className="flex items-center space-x-4">
+                        {/* Logo */}
+                        <div
+                            className="p-1 rounded-2xl shadow-xl w-16 h-16 flex items-center justify-center shrink-0 border border-[#F5BE18]/30 transition-transform duration-300 hover:scale-110"
+                            style={{ backgroundColor: COLORS.charcoal }}
+                        >
+                            <img
+                                src="./Wylie Lightning Logo.png"
+                                alt="Wylie Lightning Logo"
+                                className="w-14 h-14 object-contain rounded-xl drop-shadow-md"
+                            />
+                        </div>
+                        <div>
+                            <div className="flex items-center space-x-1.5">
+                                <h1 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight" style={{ color: COLORS.white }}>
+                                    Wylie Lightning
+                                </h1>
+                                <Zap className="w-5 h-5 fill-[#F5BE18] text-[#F5BE18] animate-pulse" />
+                            </div>
+                            <div className="flex items-center space-x-2 mt-0.5">
+                                <span
+                                    className="text-xs font-black tracking-widest uppercase px-2 py-0.5 rounded-md inline-block font-display"
+                                    style={{ backgroundColor: `${COLORS.gold}22`, color: COLORS.gold, border: `1px solid ${COLORS.gold}44` }}
+                                >
+                                    FALL 2026 SEASON
+                                </span>
+                                <span className="text-xs font-semibold" style={{ color: COLORS.silver }}>
+                                    Snack Schedule
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        );
+
+        const ProgressBar = ({ filled, total }) => {
+            const percentage = Math.round((filled / total) * 100);
+
+            return (
+                <div
+                    className="p-5 mb-6 rounded-2xl border shadow-xl anim-progress"
+                    style={{
+                        backgroundColor: COLORS.charcoal,
+                        borderColor: '#262D36'
+                    }}
+                >
+                    <div className="flex justify-between items-center text-sm mb-3">
+                        <div className="flex items-center space-x-2">
+                            <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS.gold }}></span>
+                            <span className="font-bold tracking-wide uppercase text-xs" style={{ color: COLORS.silver }}>
+                                Season Progress
+                            </span>
+                        </div>
+                        <span className="font-extrabold text-sm" style={{ color: COLORS.white }}>
+                            <span style={{ color: COLORS.gold }}>{filled}</span> of {total} Matches Covered
+                        </span>
+                    </div>
+                    <div className="w-full bg-[#0D1117] rounded-full h-3 p-0.5 border border-[#262D36] overflow-hidden">
+                        <div
+                            className="h-full rounded-full transition-all duration-700 ease-out shadow-sm"
+                            style={{
+                                width: `${percentage}%`,
+                                backgroundColor: COLORS.gold,
+                                boxShadow: percentage > 0 ? `0 0 10px ${COLORS.gold}88` : 'none'
+                            }}
+                        ></div>
+                    </div>
+                </div>
+            );
+        };
+
         // --- MAIN COMPONENT ---
-        const KnightsCalendar = () => {
+        const LightningCalendar = () => {
             const [user, setUser] = React.useState(null);
             const [signups, setSignups] = React.useState({});
             const [loading, setLoading] = React.useState(true);
             const [selectedDate, setSelectedDate] = React.useState(null);
             const [isModalOpen, setIsModalOpen] = React.useState(false);
+            const [isModalClosing, setIsModalClosing] = React.useState(false); // drives exit animation
             const [formData, setFormData] = React.useState({ parentName: '', childName: '' });
-            const [viewMode, setViewMode] = React.useState('list'); // 'list', 'signup', 'manage', 'delete_confirm'
+            const [viewMode, setViewMode] = React.useState('list'); // 'list', 'signup', 'manage', 'delete_confirm', 'success'
+            const [prevViewMode, setPrevViewMode] = React.useState(null); // for view-transition key
             const [icsDownloaded, setIcsDownloaded] = React.useState(false);
+            const [isSubmitting, setIsSubmitting] = React.useState(false);
+            const [isDeleting, setIsDeleting] = React.useState(false);
 
             // Auth
             React.useEffect(() => {
@@ -176,7 +429,8 @@
             // Data Sync
             React.useEffect(() => {
                 if (!user) return;
-                const unsubscribe = onSnapshot(collection(db, 'artifacts', appId, 'public', 'data', 'snack_signups'),
+                const unsubscribe = onSnapshot(
+                    collection(db, 'artifacts', appId, 'public', 'data', 'snack_signups'),
                     (snapshot) => {
                         const data = {};
                         snapshot.forEach(doc => {
@@ -217,41 +471,54 @@
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
-                if (!selectedDate || !user) return;
+                if (!selectedDate || !user || isSubmitting) return;
+                setIsSubmitting(true);
                 try {
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'snack_signups', selectedDate.id), {
-                        parentName: formData.parentName,
-                        childName: formData.childName,
+                        parentName: formData.parentName.trim(),
+                        childName: formData.childName.trim(),
                         dateId: selectedDate.id,
                         dateDisplay: selectedDate.display,
                         timestamp: serverTimestamp(),
                         userId: user.uid
                     });
+                    setPrevViewMode('signup');
                     setViewMode('success');
                 } catch (err) {
                     console.error("Error saving signup:", err);
                     alert("Error saving. Please try again.");
+                } finally {
+                    setIsSubmitting(false);
                 }
             };
 
             const confirmDelete = async () => {
-                if (!selectedDate || !user) return;
+                if (!selectedDate || !user || isDeleting) return;
+                setIsDeleting(true);
                 try {
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'snack_signups', selectedDate.id));
                     closeModal();
                 } catch (err) {
                     console.error("Error removing signup:", err);
+                } finally {
+                    setIsDeleting(false);
                 }
             };
 
             const closeModal = () => {
-                setIsModalOpen(false);
-                setSelectedDate(null);
-                setFormData({ parentName: '', childName: '' });
-                setIcsDownloaded(false);
+                // Trigger exit animation, then unmount
+                setIsModalClosing(true);
+                setTimeout(() => {
+                    setIsModalOpen(false);
+                    setIsModalClosing(false);
+                    setSelectedDate(null);
+                    setFormData({ parentName: '', childName: '' });
+                    setIcsDownloaded(false);
+                    setPrevViewMode(null);
+                }, 220);
             };
 
-            const initiateCancel = () => setViewMode('delete_confirm');
+            const initiateCancel = () => { setPrevViewMode('manage'); setViewMode('delete_confirm'); };
 
             const handleDownloadIcs = () => {
                 downloadIcsFile(selectedDate, formData.parentName, formData.childName);
@@ -259,72 +526,45 @@
                 setTimeout(() => setIcsDownloaded(false), 3000);
             };
 
-            // --- SUB-COMPONENTS ---
-            const Header = () => (
-                <div className="w-full text-white shadow-lg relative overflow-hidden" style={{ backgroundColor: COLORS.navy }}>
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full transform translate-x-10 -translate-y-10"></div>
-                    <div className="max-w-md mx-auto px-4 py-6 flex items-center justify-between relative z-10">
-                        <div className="flex items-center space-x-4">
-                            <div className="bg-white p-1 rounded-full shadow-md w-16 h-16 flex items-center justify-center shrink-0">
-                                <img
-                                    src="https://raw.githubusercontent.com/fab4arsnl2008/vividmemories/refs/heads/main/images/Knights_Logo.png"
-                                    alt="Knights Logo"
-                                    className="w-14 h-14 object-contain"
-                                />
-                            </div>
-                            <div>
-                                <h1 className="text-2xl font-bold tracking-tight">WYSA Knights</h1>
-                                <p className="text-sm opacity-80" style={{ color: COLORS.silver }}>Snack Schedule</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const ProgressBar = () => {
-                const total = SCHEDULE_DATES.length;
-                const filled = Object.keys(signups).length;
-                const percentage = Math.round((filled / total) * 100);
-
-                return (
-                    <div className="bg-white p-4 mb-6 shadow-sm border-b border-gray-100">
-                        <div className="flex justify-between text-sm mb-2 font-medium" style={{ color: COLORS.navy }}>
-                            <span>Season Progress</span>
-                            <span>{filled} of {total} Matches Covered</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div
-                                className="h-2.5 rounded-full transition-all duration-500"
-                                style={{ width: `${percentage}%`, backgroundColor: COLORS.steel }}
-                            ></div>
-                        </div>
-                    </div>
-                );
-            };
-
             if (loading) {
                 return (
-                    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F3F4F6' }}>
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2" style={{ borderColor: COLORS.navy }}></div>
+                    <div className="min-h-screen flex flex-col items-center justify-center space-y-4" style={{ backgroundColor: COLORS.black }}>
+                        <div className="relative">
+                            <div
+                                className="animate-spin rounded-full h-14 w-14 border-4 border-t-transparent shadow-lg"
+                                style={{ borderColor: `${COLORS.gold}33`, borderTopColor: COLORS.gold }}
+                            ></div>
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                <Zap className="w-6 h-6 text-[#F5BE18] fill-[#F5BE18]" />
+                            </div>
+                        </div>
+                        <p className="text-sm font-semibold tracking-wide" style={{ color: COLORS.silver }}>
+                            Loading schedule...
+                        </p>
                     </div>
                 );
             }
 
             return (
-                <div className="min-h-screen pb-12 font-sans" style={{ backgroundColor: '#F9FAFB' }}>
+                <div className="min-h-screen pb-16 font-sans antialiased" style={{ backgroundColor: COLORS.black }}>
                     <Header />
 
-                    <div className="max-w-md mx-auto">
-                        <ProgressBar />
+                    <main className="max-w-md mx-auto px-4 mt-6">
+                        <ProgressBar filled={Object.keys(signups).length} total={SCHEDULE_DATES.length} />
 
-                        <div className="px-4 space-y-4">
-                            <h2 className="text-lg font-bold flex items-center" style={{ color: COLORS.black }}>
-                                <Calendar className="w-5 h-5 mr-2" style={{ color: COLORS.steel }} />
-                                Upcoming Matches
-                            </h2>
+                        <div className="space-y-4">
+                            <div className="flex items-center justify-between">
+                                <h2 className="text-base font-bold uppercase tracking-wider flex items-center" style={{ color: COLORS.white }}>
+                                    <Calendar className="w-4 h-4 mr-2" style={{ color: COLORS.gold }} />
+                                    Upcoming Matches
+                                </h2>
+                                <span className="text-xs font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: '#262D36', color: COLORS.silver }}>
+                                    {SCHEDULE_DATES.length} Games
+                                </span>
+                            </div>
 
                             <div className="space-y-3">
-                                {SCHEDULE_DATES.map((date) => {
+                                {SCHEDULE_DATES.map((date, index) => {
                                     const isTaken = !!signups[date.id];
                                     const signupData = signups[date.id];
 
@@ -332,37 +572,56 @@
                                         <div
                                             key={date.id}
                                             onClick={() => handleDateClick(date)}
-                                            className={`
-                                                relative overflow-hidden rounded-xl border shadow-sm transition-all duration-200 active:scale-95 cursor-pointer
-                                                ${isTaken ? 'bg-white border-gray-200' : 'bg-white border-l-4'}
+                                            className={`anim-card anim-card-${index} relative overflow-hidden rounded-2xl border cursor-pointer shadow-md hover:shadow-xl
+                                                transition-[border-color,box-shadow,transform] duration-200 ease-[cubic-bezier(0.2,0,0,1)]
+                                                active:scale-[0.98]
+                                                ${isTaken ? 'border-[#262D36] hover:border-[#3B4452]' : 'border-[#262D36] hover:border-[#F5BE18]/60'}
                                             `}
-                                            style={{ borderLeftColor: isTaken ? 'transparent' : COLORS.steel }}
+                                            style={{
+                                                backgroundColor: COLORS.charcoal,
+                                                borderLeftWidth: '5px',
+                                                borderLeftColor: isTaken ? '#34D399' : COLORS.gold
+                                            }}
                                         >
                                             <div className="p-4 flex items-center justify-between">
                                                 {/* Left Side: Date */}
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Match Day</span>
-                                                    <span className="text-lg font-bold" style={{ color: COLORS.navy }}>{date.display}</span>
+                                                <div className="flex flex-col pr-2">
+                                                    <span className="text-[11px] font-extrabold uppercase tracking-wider" style={{ color: COLORS.silver }}>
+                                                        Match Day
+                                                    </span>
+                                                    <span className="text-base sm:text-lg font-bold mt-0.5" style={{ color: COLORS.white }}>
+                                                        {date.display}
+                                                    </span>
                                                 </div>
 
                                                 {/* Right Side: Status */}
-                                                <div className="flex items-center">
+                                                <div className="flex items-center shrink-0">
                                                     {isTaken ? (
-                                                        <div className="flex items-center space-x-3 bg-gray-50 px-3 py-2 rounded-lg border border-gray-100">
+                                                        <div className="anim-claimed-chip flex items-center space-x-2.5 bg-[#0D1117] px-3 py-2 rounded-xl border border-[#262D36] shadow-inner transition-colors duration-200">
                                                             <div className="text-right">
-                                                                <div className="text-xs text-gray-500 font-medium">Snacks by</div>
-                                                                <div className="text-sm font-bold truncate max-w-[100px]" style={{ color: COLORS.navy }}>
+                                                                <div className="text-[10px] uppercase font-bold tracking-wider" style={{ color: COLORS.silver }}>
+                                                                    Snacks by
+                                                                </div>
+                                                                <div className="text-xs sm:text-sm font-bold truncate max-w-[105px] text-white">
                                                                     {signupData.parentName}
                                                                 </div>
                                                             </div>
-                                                            <CheckCircle className="w-6 h-6 text-green-500" />
+                                                            <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0" />
                                                         </div>
                                                     ) : (
                                                         <button
-                                                            className="px-4 py-2 rounded-lg text-sm font-bold text-white shadow-md flex items-center"
-                                                            style={{ backgroundColor: COLORS.steel }}
+                                                            type="button"
+                                                            className="ripple-btn px-3.5 py-2 rounded-xl text-xs sm:text-sm font-extrabold shadow-md flex items-center space-x-1
+                                                                transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)]
+                                                                hover:brightness-110 hover:shadow-lg hover:-translate-y-0.5
+                                                                active:scale-95 active:translate-y-0"
+                                                            style={{
+                                                                backgroundColor: COLORS.gold,
+                                                                color: COLORS.black
+                                                            }}
                                                         >
-                                                            Sign Up <ChevronRight className="w-4 h-4 ml-1" />
+                                                            <span>Sign Up</span>
+                                                            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                                                         </button>
                                                     )}
                                                 </div>
@@ -372,108 +631,166 @@
                                 })}
                             </div>
                         </div>
-                    </div>
+                    </main>
 
                     {/* Modal Overlay */}
-                    {isModalOpen && (
+                    {(isModalOpen || isModalClosing) && (
                         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 sm:p-6">
+                            {/* Scrim */}
                             <div
-                                className="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity"
+                                className={`absolute inset-0 bg-black/80 backdrop-blur-sm ${isModalClosing ? 'anim-scrim-out' : 'anim-scrim-in'}`}
                                 onClick={closeModal}
                             ></div>
 
+                            {/* Sheet */}
                             <div
-                                className="relative bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md overflow-hidden transform transition-all"
-                                style={{ maxHeight: '90vh' }}
+                                className={`relative rounded-t-3xl sm:rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-[#2B323D] ${isModalClosing ? 'anim-sheet-out' : 'anim-sheet-in'}`}
+                                style={{
+                                    backgroundColor: COLORS.charcoal,
+                                    maxHeight: '90vh'
+                                }}
                             >
                                 {/* Modal Header */}
-                                <div className="p-6 pb-4" style={{ backgroundColor: COLORS.navy }}>
+                                <div
+                                    className="p-6 pb-4 border-b relative"
+                                    style={{
+                                        backgroundColor: COLORS.black,
+                                        borderBottomColor: `${COLORS.gold}33`
+                                    }}
+                                >
                                     <div className="flex justify-between items-start text-white">
                                         <div>
-                                            <h3 className="text-xl font-bold">
-                                                {viewMode === 'signup' && 'Snack Sign-up'}
-                                                {viewMode === 'manage' && 'Manage Slot'}
-                                                {viewMode === 'delete_confirm' && 'Confirm Cancellation'}
-                                                {viewMode === 'success' && 'Signup Confirmed! 🎉'}
+                                            <h3 className="font-display text-xl font-extrabold flex items-center space-x-2" style={{ color: COLORS.white }}>
+                                                <span>
+                                                    {viewMode === 'signup' && 'Snack Sign-up'}
+                                                    {viewMode === 'manage' && 'Manage Slot'}
+                                                    {viewMode === 'delete_confirm' && 'Confirm Cancellation'}
+                                                    {viewMode === 'success' && 'Signup Confirmed! ⚡'}
+                                                </span>
                                             </h3>
-                                            <p className="text-sm opacity-80 mt-1 flex items-center">
-                                                <Calendar className="w-3.5 h-3.5 mr-1.5" />
+                                            <p className="text-xs sm:text-sm mt-1.5 flex items-center font-medium" style={{ color: COLORS.silver }}>
+                                                <Calendar className="w-3.5 h-3.5 mr-1.5 shrink-0" style={{ color: COLORS.gold }} />
                                                 {selectedDate?.display}
                                             </p>
                                         </div>
-                                        <button onClick={closeModal} className="text-white/70 hover:text-white transition-colors p-1">
-                                            <X className="w-6 h-6" />
+                                        <button
+                                            onClick={closeModal}
+                                            className="text-gray-400 hover:text-white transition-colors p-1.5 rounded-full hover:bg-white/10"
+                                            aria-label="Close modal"
+                                        >
+                                            <X className="w-5 h-5" />
                                         </button>
                                     </div>
                                 </div>
 
                                 {/* Modal Body */}
-                                <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 85px)' }}>
+                                <div className="p-6 overflow-y-auto" style={{ maxHeight: 'calc(90vh - 90px)' }}>
                                     {viewMode === 'signup' && (
-                                        <form onSubmit={handleSubmit} className="space-y-5">
+                                        <form key="signup" onSubmit={handleSubmit} className="space-y-5 anim-view">
                                             <div>
-                                                <label className="block text-sm font-medium mb-1" style={{ color: COLORS.navy }}>Parent Name</label>
+                                                <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: COLORS.silver }}>
+                                                    Parent Name
+                                                </label>
                                                 <div className="relative">
-                                                    <User className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                                                    <User className="absolute left-3.5 top-3.5 w-5 h-5 transition-colors duration-200" style={{ color: COLORS.silver }} />
                                                     <input
                                                         required
                                                         type="text"
                                                         name="parentName"
                                                         value={formData.parentName}
                                                         onChange={handleInputChange}
-                                                        placeholder="e.g. John Doe"
-                                                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                        placeholder="e.g. Sarah Jenkins"
+                                                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#2B323D] bg-[#0D1117] text-white placeholder-gray-500 focus:ring-2 focus:ring-[#F5BE18] focus:border-[#F5BE18] outline-none transition-all duration-200 text-sm font-medium"
                                                     />
                                                 </div>
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-medium mb-1" style={{ color: COLORS.navy }}>Player Name</label>
+                                                <label className="block text-xs font-bold uppercase tracking-wider mb-2" style={{ color: COLORS.silver }}>
+                                                    Player Name
+                                                </label>
                                                 <div className="relative">
-                                                    <Users className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                                                    <Users className="absolute left-3.5 top-3.5 w-5 h-5" style={{ color: COLORS.silver }} />
                                                     <input
                                                         required
                                                         type="text"
                                                         name="childName"
                                                         value={formData.childName}
                                                         onChange={handleInputChange}
-                                                        placeholder="e.g. Leo"
-                                                        className="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                                                        placeholder="e.g. Liam"
+                                                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#2B323D] bg-[#0D1117] text-white placeholder-gray-500 focus:ring-2 focus:ring-[#F5BE18] focus:border-[#F5BE18] outline-none transition-all duration-200 text-sm font-medium"
                                                     />
                                                 </div>
                                             </div>
 
+                                            <div className="p-3.5 rounded-xl border border-[#2B323D] bg-[#0D1117] flex items-start space-x-3">
+                                                <Cookie className="w-5 h-5 shrink-0 mt-0.5" style={{ color: COLORS.gold }} />
+                                                <p className="text-xs leading-relaxed" style={{ color: COLORS.silver }}>
+                                                    Snacks for the team after the match (drinks are optional). Thank you for supporting Wylie Lightning!
+                                                </p>
+                                            </div>
+
                                             <button
                                                 type="submit"
-                                                className="w-full py-4 rounded-xl font-bold text-white text-lg shadow-lg hover:brightness-110 transition-all active:scale-95"
-                                                style={{ backgroundColor: COLORS.steel }}
+                                                disabled={isSubmitting}
+                                                className="ripple-btn w-full py-3.5 rounded-xl font-display font-extrabold text-base shadow-xl
+                                                    transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)]
+                                                    hover:brightness-110 hover:-translate-y-0.5 hover:shadow-2xl
+                                                    active:scale-[0.98] active:translate-y-0
+                                                    disabled:opacity-60 disabled:cursor-not-allowed disabled:translate-y-0
+                                                    flex items-center justify-center space-x-2"
+                                                style={{
+                                                    backgroundColor: COLORS.gold,
+                                                    color: COLORS.black
+                                                }}
                                             >
-                                                Confirm Signup
+                                                {isSubmitting ? (
+                                                    <>
+                                                        <svg className="spin w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                            <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round"/>
+                                                        </svg>
+                                                        <span>Saving...</span>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <Zap className="w-5 h-5 fill-current" />
+                                                        <span>Confirm Signup</span>
+                                                    </>
+                                                )}
                                             </button>
                                         </form>
                                     )}
 
                                     {viewMode === 'success' && (
-                                        <div className="space-y-5">
+                                        <div key="success" className="space-y-5 anim-view">
                                             <div className="text-center">
-                                                <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-3">
-                                                    <CheckCircle className="w-9 h-9 text-emerald-600" />
+                                                <div
+                                                    className="anim-pop mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-3 shadow-lg border border-[#F5BE18]/40"
+                                                    style={{ backgroundColor: `${COLORS.gold}20` }}
+                                                >
+                                                    <Zap className="w-8 h-8 fill-[#F5BE18] text-[#F5BE18]" />
                                                 </div>
 
-                                                <h4 className="text-xl font-bold" style={{ color: COLORS.navy }}>You're All Set!</h4>
-                                                <p className="text-gray-600 text-sm mt-1">
-                                                    Thank you, <span className="font-semibold text-gray-800">{formData.parentName}</span>! You're signed up to bring snacks for <span className="font-semibold text-gray-800">{formData.childName || 'the team'}</span>.
+                                                <h4 className="font-display text-xl font-extrabold" style={{ color: COLORS.white }}>
+                                                    You're All Set!
+                                                </h4>
+                                                <p className="text-xs sm:text-sm mt-1.5 leading-relaxed" style={{ color: COLORS.silver }}>
+                                                    Thank you, <span className="font-bold text-white">{formData.parentName}</span>! You're signed up to bring snacks for <span className="font-bold text-white">{formData.childName || 'the team'}</span>.
                                                 </p>
+                                                <div className="mt-2.5 inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#F5BE18]/30 bg-[#F5BE18]/10 text-[#F5BE18] text-xs font-semibold">
+                                                    <Zap className="w-3.5 h-3.5 fill-current shrink-0" />
+                                                    <span>Don't forget to add this to your calendar via the links below!</span>
+                                                </div>
                                             </div>
 
                                             {/* Add to Calendar Section */}
-                                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                                            <div className="bg-[#0D1117] border border-[#2B323D] rounded-2xl p-4 space-y-3">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center">
-                                                        <Calendar className="w-4 h-4 mr-1.5" style={{ color: COLORS.steel }} />
+                                                    <span className="text-[11px] font-extrabold uppercase tracking-wider flex items-center text-white">
+                                                        <Calendar className="w-3.5 h-3.5 mr-1.5" style={{ color: COLORS.gold }} />
                                                         Add to Calendar
                                                     </span>
-                                                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                    <span className="text-[10px] font-bold text-[#F5BE18] bg-[#F5BE18]/15 px-2 py-0.5 rounded-md border border-[#F5BE18]/30">
                                                         🔔 Reminders Included
                                                     </span>
                                                 </div>
@@ -484,7 +801,7 @@
                                                         href={getGoogleCalendarUrl(selectedDate, formData.parentName, formData.childName)}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 active:scale-95 text-gray-700 text-sm font-semibold transition-all shadow-sm group"
+                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl border border-[#2B323D] bg-[#1A1E24] hover:bg-[#252B33] active:scale-95 text-white text-xs font-bold transition-all shadow-sm group"
                                                     >
                                                         <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                                                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -493,21 +810,25 @@
                                                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                                                         </svg>
                                                         <span>Google Calendar</span>
-                                                        <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                                                        <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-white" />
                                                     </a>
 
                                                     {/* Apple / Outlook / .ics Download Button */}
                                                     <button
                                                         type="button"
                                                         onClick={handleDownloadIcs}
-                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-lg border text-white text-sm font-semibold transition-all shadow-sm active:scale-95 hover:brightness-110"
-                                                        style={{ backgroundColor: COLORS.steel, borderColor: COLORS.steel }}
+                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all shadow-sm active:scale-95 hover:brightness-110"
+                                                        style={{
+                                                            backgroundColor: COLORS.gold,
+                                                            borderColor: COLORS.gold,
+                                                            color: COLORS.black
+                                                        }}
                                                     >
                                                         <Download className="w-4 h-4 shrink-0" />
                                                         <span>{icsDownloaded ? 'Downloaded .ics!' : 'Apple / Outlook (.ics)'}</span>
                                                     </button>
                                                 </div>
-                                                <p className="text-[11px] text-gray-500 text-center pt-0.5">
+                                                <p className="text-[10px] text-center pt-0.5" style={{ color: COLORS.silver }}>
                                                     Automatically sets match notifications 1 day &amp; 2 hours prior
                                                 </p>
                                             </div>
@@ -516,8 +837,11 @@
                                             <div className="pt-2">
                                                 <button
                                                     onClick={closeModal}
-                                                    className="w-full py-3 rounded-xl font-bold text-white shadow-md transition-all active:scale-95 hover:brightness-110 flex items-center justify-center"
-                                                    style={{ backgroundColor: COLORS.navy }}
+                                                    className="w-full py-3.5 rounded-xl font-display font-extrabold text-sm transition-all active:scale-[0.98] hover:brightness-110 flex items-center justify-center border border-[#2B323D]"
+                                                    style={{
+                                                        backgroundColor: '#262D36',
+                                                        color: COLORS.white
+                                                    }}
                                                 >
                                                     Done &amp; Return to Schedule
                                                 </button>
@@ -526,27 +850,33 @@
                                     )}
 
                                     {viewMode === 'manage' && (
-                                        <div className="space-y-5">
+                                        <div key="manage" className="space-y-5 anim-view">
                                             <div className="text-center">
-                                                <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                                    <CheckCircle className="w-9 h-9 text-green-600" />
+                                                <div className="anim-pop mx-auto w-16 h-16 bg-emerald-950/60 border border-emerald-500/40 rounded-2xl flex items-center justify-center mb-3 shadow-lg">
+                                                    <CheckCircle className="w-8 h-8 text-emerald-400" />
                                                 </div>
 
                                                 <div>
-                                                    <h4 className="text-gray-500 text-xs uppercase tracking-wide font-bold">Provider</h4>
-                                                    <p className="text-2xl font-bold" style={{ color: COLORS.navy }}>{formData.parentName}</p>
-                                                    <p className="text-gray-600 text-sm font-medium mt-0.5">Parent of {formData.childName || 'Player'}</p>
+                                                    <h4 className="text-[11px] uppercase tracking-wider font-extrabold" style={{ color: COLORS.silver }}>
+                                                        Snack Provider
+                                                    </h4>
+                                                    <p className="font-display text-2xl font-black mt-0.5" style={{ color: COLORS.white }}>
+                                                        {formData.parentName}
+                                                    </p>
+                                                    <p className="text-xs sm:text-sm font-semibold mt-1" style={{ color: COLORS.gold }}>
+                                                        Parent of {formData.childName || 'Player'}
+                                                    </p>
                                                 </div>
                                             </div>
 
                                             {/* Add to Calendar Section */}
-                                            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-3">
+                                            <div className="bg-[#0D1117] border border-[#2B323D] rounded-2xl p-4 space-y-3">
                                                 <div className="flex items-center justify-between">
-                                                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center">
-                                                        <Calendar className="w-4 h-4 mr-1.5" style={{ color: COLORS.steel }} />
+                                                    <span className="text-[11px] font-extrabold uppercase tracking-wider flex items-center text-white">
+                                                        <Calendar className="w-3.5 h-3.5 mr-1.5" style={{ color: COLORS.gold }} />
                                                         Add to Calendar
                                                     </span>
-                                                    <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                                                    <span className="text-[10px] font-bold text-[#F5BE18] bg-[#F5BE18]/15 px-2 py-0.5 rounded-md border border-[#F5BE18]/30">
                                                         🔔 Reminders Included
                                                     </span>
                                                 </div>
@@ -557,7 +887,7 @@
                                                         href={getGoogleCalendarUrl(selectedDate, formData.parentName, formData.childName)}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-lg border border-gray-300 bg-white hover:bg-gray-50 active:scale-95 text-gray-700 text-sm font-semibold transition-all shadow-sm group"
+                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl border border-[#2B323D] bg-[#1A1E24] hover:bg-[#252B33] active:scale-95 text-white text-xs font-bold transition-all shadow-sm group"
                                                     >
                                                         <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24">
                                                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -566,64 +896,83 @@
                                                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
                                                         </svg>
                                                         <span>Google Calendar</span>
-                                                        <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-600" />
+                                                        <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-white" />
                                                     </a>
 
                                                     {/* Apple / Outlook / .ics Download Button */}
                                                     <button
                                                         type="button"
                                                         onClick={handleDownloadIcs}
-                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-lg border text-white text-sm font-semibold transition-all shadow-sm active:scale-95 hover:brightness-110"
-                                                        style={{ backgroundColor: COLORS.steel, borderColor: COLORS.steel }}
+                                                        className="flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl border text-xs font-bold transition-all shadow-sm active:scale-95 hover:brightness-110"
+                                                        style={{
+                                                            backgroundColor: COLORS.gold,
+                                                            borderColor: COLORS.gold,
+                                                            color: COLORS.black
+                                                        }}
                                                     >
                                                         <Download className="w-4 h-4 shrink-0" />
                                                         <span>{icsDownloaded ? 'Downloaded .ics!' : 'Apple / Outlook (.ics)'}</span>
                                                     </button>
                                                 </div>
-                                                <p className="text-[11px] text-gray-500 text-center pt-0.5">
+                                                <p className="text-[10px] text-center pt-0.5" style={{ color: COLORS.silver }}>
                                                     Automatically sets match notifications 1 day &amp; 2 hours prior
                                                 </p>
                                             </div>
 
                                             {/* Cancellation Section */}
-                                            <div className="pt-3 border-t border-gray-100 text-center">
-                                                <p className="text-xs text-gray-500 mb-3">Need to change plans? You can release this slot so another parent can sign up.</p>
+                                            <div className="pt-3 border-t border-[#2B323D] text-center">
+                                                <p className="text-xs mb-3" style={{ color: COLORS.silver }}>
+                                                    Need to change plans? You can release this slot so another parent can sign up.
+                                                </p>
                                                 <button
                                                     onClick={initiateCancel}
-                                                    className="w-full py-2.5 rounded-xl font-bold text-red-600 bg-red-50 hover:bg-red-100 border border-red-100 transition-all text-sm"
+                                                    className="ripple-btn w-full py-2.5 rounded-xl font-bold text-red-400 bg-red-950/40 hover:bg-red-900/60 border border-red-800/60
+                                                        transition-all duration-200 text-xs active:scale-95"
                                                 >
-                                                    Cancel Signup & Release Date
+                                                    Cancel Signup &amp; Release Date
                                                 </button>
                                             </div>
                                         </div>
                                     )}
 
                                     {viewMode === 'delete_confirm' && (
-                                        <div className="space-y-6 text-center">
-                                            <div className="mx-auto w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mb-4">
-                                                <AlertTriangle className="w-10 h-10 text-red-600" />
+                                        <div key="delete_confirm" className="space-y-6 text-center anim-view">
+                                            <div className="anim-pop mx-auto w-16 h-16 bg-red-950/60 border border-red-500/40 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                                                <AlertTriangle className="w-8 h-8 text-red-400" />
                                             </div>
 
                                             <div>
-                                                <h4 className="text-red-700 text-lg font-bold">Are you sure?</h4>
-                                                <p className="text-gray-600 mt-2">
-                                                    This will remove <span className="font-bold">{formData.parentName}'s</span> commitment to bring snacks on <span className="font-bold">{selectedDate?.display}</span>.
+                                                <h4 className="font-display text-lg font-bold text-red-400">Are you sure?</h4>
+                                                <p className="text-sm mt-2" style={{ color: COLORS.silver }}>
+                                                    This will remove <span className="font-bold text-white">{formData.parentName}'s</span> commitment to bring snacks on <span className="font-bold text-white">{selectedDate?.display}</span>.
                                                 </p>
-                                                <p className="text-sm text-gray-500 mt-2">The slot will become available for other parents.</p>
+                                                <p className="text-xs mt-1.5 text-gray-500">The slot will immediately become available for other parents.</p>
                                             </div>
 
-                                            <div className="pt-4 grid grid-cols-2 gap-4">
+                                            <div className="pt-4 grid grid-cols-2 gap-3">
                                                 <button
-                                                    onClick={() => setViewMode('manage')}
-                                                    className="w-full py-3 rounded-xl font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 transition-all"
+                                                    onClick={() => { setPrevViewMode('delete_confirm'); setViewMode('manage'); }}
+                                                    className="ripple-btn w-full py-3 rounded-xl font-bold bg-[#262D36] hover:bg-[#313945] text-white
+                                                        transition-all duration-200 text-xs sm:text-sm active:scale-95 border border-[#3B4452]"
                                                 >
                                                     Go Back
                                                 </button>
                                                 <button
                                                     onClick={confirmDelete}
-                                                    className="w-full py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg transition-all"
+                                                    disabled={isDeleting}
+                                                    className="ripple-btn w-full py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg
+                                                        transition-all duration-200 text-xs sm:text-sm active:scale-95
+                                                        disabled:opacity-60 disabled:cursor-not-allowed
+                                                        flex items-center justify-center space-x-2"
                                                 >
-                                                    Yes, Remove
+                                                    {isDeleting ? (
+                                                        <>
+                                                            <svg className="spin w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                                                <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" strokeLinecap="round"/>
+                                                            </svg>
+                                                            <span>Removing...</span>
+                                                        </>
+                                                    ) : 'Yes, Remove'}
                                                 </button>
                                             </div>
                                         </div>
@@ -634,19 +983,32 @@
                     )}
 
                     {/* Footer with Logo */}
-                    <div className="flex justify-center mt-12 mb-8">
-                        <img
-                            src="https://raw.githubusercontent.com/fab4arsnl2008/vividmemories/refs/heads/main/images/Knights_Logo.png"
-                            alt="Knights Logo"
-                            className="w-16 h-16 object-contain"
-                        />
-                    </div>
+                    <footer className="mt-14 mb-8 flex flex-col items-center justify-center space-y-3">
+                        <div
+                            className="p-2 rounded-2xl shadow-xl border border-[#2B323D] transition-transform duration-300 hover:scale-105"
+                            style={{ backgroundColor: COLORS.charcoal }}
+                        >
+                            <img
+                                src="./Wylie Lightning Logo.png"
+                                alt="Wylie Lightning Logo"
+                                className="w-16 h-16 object-contain rounded-xl drop-shadow-md"
+                            />
+                        </div>
+                        <div className="text-center">
+                            <p className="font-display text-xs font-bold uppercase tracking-widest" style={{ color: COLORS.silver }}>
+                                Wylie Lightning
+                            </p>
+                            <p className="text-[11px] text-gray-500 mt-0.5">
+                                Fall 2026 Season Snack Signup
+                            </p>
+                        </div>
+                    </footer>
                 </div>
             );
         };
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<KnightsCalendar />);
+        root.render(<LightningCalendar />);
     </script>
 </body>
 
