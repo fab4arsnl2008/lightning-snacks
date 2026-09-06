@@ -202,6 +202,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>{children}</svg>
         );
         const Calendar = (props) => <IconBase {...props}><rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" /></IconBase>;
+        const Clock = (props) => <IconBase {...props}><circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" /></IconBase>;
         const User = (props) => <IconBase {...props}><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></IconBase>;
         const Users = (props) => <IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></IconBase>;
         const CheckCircle = (props) => <IconBase {...props}><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" /></IconBase>;
@@ -224,14 +225,14 @@
         };
 
         const SCHEDULE_DATES = [
-            { id: 'date-1', display: 'Saturday, Mar 7', short: 'Mar 7', start: '20260307T090000', end: '20260307T100000' },
-            { id: 'date-2', display: 'Saturday, Mar 14', short: 'Mar 14', start: '20260314T090000', end: '20260314T100000' },
-            { id: 'date-3', display: 'Saturday, Mar 21', short: 'Mar 21', start: '20260321T090000', end: '20260321T100000' },
-            { id: 'date-4', display: 'Saturday, Mar 28', short: 'Mar 28', start: '20260328T090000', end: '20260328T100000' },
-            { id: 'date-5', display: 'Saturday, Apr 4', short: 'Apr 4', start: '20260404T090000', end: '20260404T100000' },
-            { id: 'date-6', display: 'Saturday, Apr 11', short: 'Apr 11', start: '20260411T090000', end: '20260411T100000' },
-            { id: 'date-7', display: 'Saturday, Apr 18', short: 'Apr 18', start: '20260418T090000', end: '20260418T100000' },
-            { id: 'date-8', display: 'Saturday, Apr 25', short: 'Apr 25', start: '20260425T090000', end: '20260425T100000' }
+            { id: 'date-1', display: 'Saturday, Sep 12, 2026', time: '12:45 PM CDT', short: 'Sep 12', start: '20260912T124500', end: '20260912T134500' },
+            { id: 'date-2', display: 'Saturday, Sep 19, 2026', time: '1:00 PM CDT', short: 'Sep 19', start: '20260919T130000', end: '20260919T140000' },
+            { id: 'date-3', display: 'Saturday, Sep 26, 2026', time: '8:00 AM CDT', short: 'Sep 26', start: '20260926T080000', end: '20260926T090000' },
+            { id: 'date-4', display: 'Saturday, Oct 3, 2026', time: '10:15 AM CDT', short: 'Oct 3', start: '20261003T101500', end: '20261003T111500' },
+            { id: 'date-5', display: 'Saturday, Oct 17, 2026', time: '2:15 PM CDT', short: 'Oct 17', start: '20261017T141500', end: '20261017T151500' },
+            { id: 'date-6', display: 'Saturday, Oct 24, 2026', time: '12:45 PM CDT', short: 'Oct 24', start: '20261024T124500', end: '20261024T134500' },
+            { id: 'date-7', display: 'Saturday, Oct 31, 2026', time: '9:00 AM CDT', short: 'Oct 31', start: '20261031T090000', end: '20261031T100000' },
+            { id: 'date-8', display: 'Saturday, Nov 7, 2026', time: '11:30 AM CST', short: 'Nov 7', start: '20261107T113000', end: '20261107T123000' }
         ];
 
         const appId = 'wylie-lightning-2026';
@@ -242,10 +243,11 @@
             const title = 'Bring Snacks - Wylie Lightning ⚡🧃';
             const location = 'Wylie Soccer Fields';
             const childText = childName ? ` for ${childName}'s team` : '';
-            const details = `Reminder: Snack duty${childText}!\n\nParent: ${parentName || 'Parent'}\nPlayer: ${childName || 'Player'}\nMatch: ${selectedDate.display}\n\nRemember to bring snacks for the team today! Go Lightning! ⚡🧃`;
+            const timeText = selectedDate.time ? ` at ${selectedDate.time}` : '';
+            const details = `Reminder: Snack duty${childText}!\n\nParent: ${parentName || 'Parent'}\nPlayer: ${childName || 'Player'}\nMatch: ${selectedDate.display}${timeText}\n\nRemember to bring snacks for the team today! Go Lightning! ⚡🧃`;
 
-            const startStr = selectedDate.start || '20260307T090000';
-            const endStr = selectedDate.end || '20260307T100000';
+            const startStr = selectedDate.start || '20260912T124500';
+            const endStr = selectedDate.end || '20260912T134500';
             const dates = `${startStr}/${endStr}`;
 
             const params = new URLSearchParams({
@@ -266,10 +268,11 @@
             const title = 'Bring Snacks - Wylie Lightning ⚡🧃';
             const location = 'Wylie Soccer Fields';
             const childText = childName ? ` for ${childName}'s team` : '';
-            const description = `Reminder: Snack duty${childText}!\\n\\nParent: ${parentName || 'Parent'}\\nPlayer: ${childName || 'Player'}\\nMatch: ${selectedDate.display}\\n\\nRemember to bring snacks for the team today! Go Lightning! ⚡🧃`;
+            const timeText = selectedDate.time ? ` at ${selectedDate.time}` : '';
+            const description = `Reminder: Snack duty${childText}!\\n\\nParent: ${parentName || 'Parent'}\\nPlayer: ${childName || 'Player'}\\nMatch: ${selectedDate.display}${timeText}\\n\\nRemember to bring snacks for the team today! Go Lightning! ⚡🧃`;
 
-            const startStr = selectedDate.start || '20260307T090000';
-            const endStr = selectedDate.end || '20260307T100000';
+            const startStr = selectedDate.start || '20260912T124500';
+            const endStr = selectedDate.end || '20260912T134500';
 
             const nowUtc = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + 'Z';
             const uid = `wylie-lightning-snack-${selectedDate.id}-${Date.now()}@wylielightning.com`;
@@ -480,6 +483,7 @@
                         childName: formData.childName.trim(),
                         dateId: selectedDate.id,
                         dateDisplay: selectedDate.display,
+                        dateTime: selectedDate.time || '',
                         timestamp: serverTimestamp(),
                         userId: user.uid
                     });
@@ -585,12 +589,18 @@
                                             }}
                                         >
                                             <div className="p-4 flex items-center justify-between">
-                                                {/* Left Side: Date */}
+                                                {/* Left Side: Match info & Date & Time */}
                                                 <div className="flex flex-col pr-2">
-                                                    <span className="text-[11px] font-extrabold uppercase tracking-wider" style={{ color: COLORS.silver }}>
-                                                        Match Day
-                                                    </span>
-                                                    <span className="text-base sm:text-lg font-bold mt-0.5" style={{ color: COLORS.white }}>
+                                                    <div className="flex items-center space-x-2 mb-1">
+                                                        <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-[#0D1117] border border-[#262D36]" style={{ color: COLORS.silver }}>
+                                                            Match {index + 1}
+                                                        </span>
+                                                        <span className="text-xs font-bold flex items-center" style={{ color: COLORS.gold }}>
+                                                            <Clock className="w-3.5 h-3.5 mr-1 inline shrink-0" />
+                                                            {date.time}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-base sm:text-lg font-bold leading-tight" style={{ color: COLORS.white }}>
                                                         {date.display}
                                                     </span>
                                                 </div>
@@ -669,10 +679,18 @@
                                                     {viewMode === 'success' && 'Signup Confirmed! ⚡'}
                                                 </span>
                                             </h3>
-                                            <p className="text-xs sm:text-sm mt-1.5 flex items-center font-medium" style={{ color: COLORS.silver }}>
-                                                <Calendar className="w-3.5 h-3.5 mr-1.5 shrink-0" style={{ color: COLORS.gold }} />
-                                                {selectedDate?.display}
-                                            </p>
+                                            <div className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs sm:text-sm font-medium" style={{ color: COLORS.silver }}>
+                                                <span className="flex items-center">
+                                                    <Calendar className="w-3.5 h-3.5 mr-1.5 shrink-0" style={{ color: COLORS.gold }} />
+                                                    {selectedDate?.display}
+                                                </span>
+                                                {selectedDate?.time && (
+                                                    <span className="flex items-center font-bold" style={{ color: COLORS.gold }}>
+                                                        <Clock className="w-3.5 h-3.5 mr-1.5 shrink-0" />
+                                                        {selectedDate.time}
+                                                    </span>
+                                                )}
+                                            </div>
                                         </div>
                                         <button
                                             onClick={closeModal}
@@ -945,7 +963,7 @@
                                             <div>
                                                 <h4 className="font-display text-lg font-bold text-red-400">Are you sure?</h4>
                                                 <p className="text-sm mt-2" style={{ color: COLORS.silver }}>
-                                                    This will remove <span className="font-bold text-white">{formData.parentName}'s</span> commitment to bring snacks on <span className="font-bold text-white">{selectedDate?.display}</span>.
+                                                    This will remove <span className="font-bold text-white">{formData.parentName}'s</span> commitment to bring snacks on <span className="font-bold text-white">{selectedDate?.display}</span>{selectedDate?.time ? ` (${selectedDate.time})` : ''}.
                                                 </p>
                                                 <p className="text-xs mt-1.5 text-gray-500">The slot will immediately become available for other parents.</p>
                                             </div>
