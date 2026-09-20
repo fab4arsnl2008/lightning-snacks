@@ -181,7 +181,7 @@
         // --- FIREBASE IMPORTS ---
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged, setPersistence, inMemoryPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
         // --- FIREBASE CONFIG ---
         const firebaseConfig = {
@@ -420,19 +420,34 @@
             const [icsDownloaded, setIcsDownloaded] = React.useState(false);
             const [isSubmitting, setIsSubmitting] = React.useState(false);
             const [isDeleting, setIsDeleting] = React.useState(false);
+            const [submitError, setSubmitError] = React.useState(null);
+            const [deleteError, setDeleteError] = React.useState(null);
 
-            // Auth
+            // Auth initialization with graceful persistence fallback for iOS / Private Browsing
             React.useEffect(() => {
-                signInAnonymously(auth);
+                const initAuth = async () => {
+                    try {
+                        await signInAnonymously(auth);
+                    } catch (err) {
+                        console.warn("Initial anonymous auth failed, retrying with in-memory persistence:", err);
+                        try {
+                            await setPersistence(auth, inMemoryPersistence);
+                            await signInAnonymously(auth);
+                        } catch (err2) {
+                            console.error("Anonymous auth failed with in-memory persistence:", err2);
+                        }
+                    }
+                };
+                initAuth();
+
                 const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
                     setUser(currentUser);
                 });
                 return () => unsubscribe();
             }, []);
 
-            // Data Sync
+            // Data Sync (public schedule - does not wait for auth)
             React.useEffect(() => {
-                if (!user) return;
                 const unsubscribe = onSnapshot(
                     collection(db, 'artifacts', appId, 'public', 'data', 'snack_signups'),
                     (snapshot) => {
@@ -449,13 +464,38 @@
                     }
                 );
                 return () => unsubscribe();
-            }, [user]);
+            }, []);
+
+            // Helper to guarantee an active authenticated user exists before database write
+            const ensureAuth = async () => {
+                const activeUser = user || auth.currentUser;
+                if (activeUser) return activeUser;
+
+                try {
+                    const cred = await signInAnonymously(auth);
+                    setUser(cred.user);
+                    return cred.user;
+                } catch (err) {
+                    console.warn("Re-attempting anonymous auth with in-memory persistence:", err);
+                    try {
+                        await setPersistence(auth, inMemoryPersistence);
+                        const cred = await signInAnonymously(auth);
+                        setUser(cred.user);
+                        return cred.user;
+                    } catch (fallbackErr) {
+                        console.error("Authentication failed:", fallbackErr);
+                        throw new Error("Unable to establish secure connection. Please check your internet connection.");
+                    }
+                }
+            };
 
             // Handlers
             const handleDateClick = (dateObj) => {
                 const existingSignup = signups[dateObj.id];
                 setSelectedDate(dateObj);
                 setIcsDownloaded(false);
+                setSubmitError(null);
+                setDeleteError(null);
                 if (existingSignup) {
                     setFormData({
                         parentName: existingSignup.parentName,
@@ -470,41 +510,64 @@
             };
 
             const handleInputChange = (e) => {
+                if (submitError) setSubmitError(null);
                 setFormData({ ...formData, [e.target.name]: e.target.value });
             };
 
             const handleSubmit = async (e) => {
-                e.preventDefault();
-                if (!selectedDate || !user || isSubmitting) return;
+                if (e && e.preventDefault) e.preventDefault();
+
+                // Explicitly blur any focused input to close the mobile keyboard and prevent WebKit tap swallowing
+                if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                    document.activeElement.blur();
+                }
+
+                if (!selectedDate || isSubmitting) return;
+
+                const trimmedParent = formData.parentName.trim();
+                const trimmedChild = formData.childName.trim();
+
+                if (!trimmedParent || !trimmedChild) {
+                    setSubmitError("Please provide both parent and player names.");
+                    return;
+                }
+
+                setSubmitError(null);
                 setIsSubmitting(true);
+
                 try {
+                    const currentUser = await ensureAuth();
+
                     await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'snack_signups', selectedDate.id), {
-                        parentName: formData.parentName.trim(),
-                        childName: formData.childName.trim(),
+                        parentName: trimmedParent,
+                        childName: trimmedChild,
                         dateId: selectedDate.id,
                         dateDisplay: selectedDate.display,
                         dateTime: selectedDate.time || '',
                         timestamp: serverTimestamp(),
-                        userId: user.uid
+                        userId: currentUser.uid
                     });
                     setPrevViewMode('signup');
                     setViewMode('success');
                 } catch (err) {
                     console.error("Error saving signup:", err);
-                    alert("Error saving. Please try again.");
+                    setSubmitError(err.message || "Error saving. Please check your connection and try again.");
                 } finally {
                     setIsSubmitting(false);
                 }
             };
 
             const confirmDelete = async () => {
-                if (!selectedDate || !user || isDeleting) return;
+                if (!selectedDate || isDeleting) return;
                 setIsDeleting(true);
+                setDeleteError(null);
                 try {
+                    await ensureAuth();
                     await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'snack_signups', selectedDate.id));
                     closeModal();
                 } catch (err) {
                     console.error("Error removing signup:", err);
+                    setDeleteError("Unable to cancel slot. Please try again.");
                 } finally {
                     setIsDeleting(false);
                 }
@@ -519,11 +582,17 @@
                     setSelectedDate(null);
                     setFormData({ parentName: '', childName: '' });
                     setIcsDownloaded(false);
+                    setSubmitError(null);
+                    setDeleteError(null);
                     setPrevViewMode(null);
                 }, 220);
             };
 
-            const initiateCancel = () => { setPrevViewMode('manage'); setViewMode('delete_confirm'); };
+            const initiateCancel = () => {
+                setDeleteError(null);
+                setPrevViewMode('manage');
+                setViewMode('delete_confirm');
+            };
 
             const handleDownloadIcs = () => {
                 downloadIcsFile(selectedDate, formData.parentName, formData.childName);
@@ -716,10 +785,12 @@
                                                         required
                                                         type="text"
                                                         name="parentName"
+                                                        autoComplete="name"
+                                                        autoCapitalize="words"
                                                         value={formData.parentName}
                                                         onChange={handleInputChange}
                                                         placeholder="e.g. Sarah Jenkins"
-                                                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#2B323D] bg-[#0D1117] text-white placeholder-gray-500 focus:ring-2 focus:ring-[#F5BE18] focus:border-[#F5BE18] outline-none transition-all duration-200 text-sm font-medium"
+                                                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#2B323D] bg-[#0D1117] text-white placeholder-gray-500 focus:ring-2 focus:ring-[#F5BE18] focus:border-[#F5BE18] outline-none transition-all duration-200 text-base sm:text-sm font-medium"
                                                     />
                                                 </div>
                                             </div>
@@ -734,10 +805,11 @@
                                                         required
                                                         type="text"
                                                         name="childName"
+                                                        autoCapitalize="words"
                                                         value={formData.childName}
                                                         onChange={handleInputChange}
                                                         placeholder="e.g. Liam"
-                                                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#2B323D] bg-[#0D1117] text-white placeholder-gray-500 focus:ring-2 focus:ring-[#F5BE18] focus:border-[#F5BE18] outline-none transition-all duration-200 text-sm font-medium"
+                                                        className="w-full pl-11 pr-4 py-3 rounded-xl border border-[#2B323D] bg-[#0D1117] text-white placeholder-gray-500 focus:ring-2 focus:ring-[#F5BE18] focus:border-[#F5BE18] outline-none transition-all duration-200 text-base sm:text-sm font-medium"
                                                     />
                                                 </div>
                                             </div>
@@ -749,10 +821,22 @@
                                                 </p>
                                             </div>
 
+                                            {submitError && (
+                                                <div className="p-3 rounded-xl bg-red-950/70 border border-red-500/50 flex items-start space-x-2.5 text-xs text-red-300 anim-view">
+                                                    <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                                                    <span>{submitError}</span>
+                                                </div>
+                                            )}
+
                                             <button
                                                 type="submit"
                                                 disabled={isSubmitting}
-                                                className="ripple-btn w-full py-3.5 rounded-xl font-display font-extrabold text-base shadow-xl
+                                                onTouchStart={() => {
+                                                    if (document.activeElement && typeof document.activeElement.blur === 'function') {
+                                                        document.activeElement.blur();
+                                                    }
+                                                }}
+                                                className="ripple-btn cursor-pointer touch-manipulation w-full py-3.5 rounded-xl font-display font-extrabold text-base shadow-xl
                                                     transition-all duration-200 ease-[cubic-bezier(0.2,0,0,1)]
                                                     hover:brightness-110 hover:-translate-y-0.5 hover:shadow-2xl
                                                     active:scale-[0.98] active:translate-y-0
@@ -968,10 +1052,17 @@
                                                 <p className="text-xs mt-1.5 text-gray-500">The slot will immediately become available for other parents.</p>
                                             </div>
 
+                                            {deleteError && (
+                                                <div className="p-3 rounded-xl bg-red-950/70 border border-red-500/50 flex items-start space-x-2.5 text-xs text-red-300 anim-view text-left">
+                                                    <AlertTriangle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />
+                                                    <span>{deleteError}</span>
+                                                </div>
+                                            )}
+
                                             <div className="pt-4 grid grid-cols-2 gap-3">
                                                 <button
                                                     onClick={() => { setPrevViewMode('delete_confirm'); setViewMode('manage'); }}
-                                                    className="ripple-btn w-full py-3 rounded-xl font-bold bg-[#262D36] hover:bg-[#313945] text-white
+                                                    className="ripple-btn cursor-pointer touch-manipulation w-full py-3 rounded-xl font-bold bg-[#262D36] hover:bg-[#313945] text-white
                                                         transition-all duration-200 text-xs sm:text-sm active:scale-95 border border-[#3B4452]"
                                                 >
                                                     Go Back
@@ -979,7 +1070,7 @@
                                                 <button
                                                     onClick={confirmDelete}
                                                     disabled={isDeleting}
-                                                    className="ripple-btn w-full py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg
+                                                    className="ripple-btn cursor-pointer touch-manipulation w-full py-3 rounded-xl font-bold text-white bg-red-600 hover:bg-red-700 shadow-lg
                                                         transition-all duration-200 text-xs sm:text-sm active:scale-95
                                                         disabled:opacity-60 disabled:cursor-not-allowed
                                                         flex items-center justify-center space-x-2"
